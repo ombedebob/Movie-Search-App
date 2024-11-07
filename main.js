@@ -2,7 +2,7 @@ let searchMovie = document.getElementById("searchMovie");
 let movieResults = document.getElementById("movieResults");
 let searchButton = document.getElementById("searchButton");
 
-function getMovies() {
+async function getMovies() {
   movieResults.innerHTML = '';
 
   let query = searchMovie.value.trim();
@@ -12,21 +12,20 @@ function getMovies() {
   }
 
   let url = `https://www.omdbapi.com/?apikey=d55bcad0&s=${encodeURIComponent(query)}`;
-
   
-  fetch(url)
-    .then(response => response.json())
-    .then(data => {
-      if (data.Response === "True") {
-        displayMovies(data.Search);
-      } else {
-        movieResults.innerHTML = `<p>No movies found for "${query}"</p>`;
-      }
-    })
-    .catch(error => {
-      console.error("Error fetching data:", error);
-      movieResults.innerHTML = `<p>There was an error retrieving the movies.</p>`;
-    });
+  try {
+    const response = await fetch(url)
+    const data = await response.json()
+    if(data.Response === "True"){
+      displayMovies(data.Search);
+    } else {
+      movieResults.innerHTML = `<p>No movies found for "${query}"</p>`;
+    }
+  }
+  catch (error) {
+    console.error("Error fetching data:", error);
+    movieResults.innerHTML = `<p>Opps...an error occured.</p>`;
+  }
 }
 
 function displayMovies(movies) {
